@@ -1,0 +1,342 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="my-icons.html">
+<link rel="import" href="player-list.html">
+<link rel="import" href="player-controls.html">
+
+<dom-module id="my-app">
+  <template>
+    <style>
+      :host {
+        --app-primary-color: #4285f4;
+        --app-secondary-color: black;
+
+        display: block;
+      }
+
+      app-drawer-layout:not([narrow]) [drawer-toggle] {
+        display: none;
+      }
+
+      app-header {
+        color: #fff;
+        background-color: var(--app-primary-color);
+      }
+
+      app-toolbar {
+        background-color: #33363A;
+        color: #626D74;
+      }
+
+      .headerContainer {
+        display: flex;
+        flex-direction: row;
+        padding: 0 250px;
+        margin: 0px;
+        height: 60px;
+        justify-content: space-between;
+        width:100%;
+      }
+
+      .streams {
+        display:flex;
+        flex-direction: row;
+      }
+
+      .views {
+        display:flex;
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .viewsText {
+        padding-right: 10px;
+      }
+
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: white;
+      }
+
+      .drawer-list {
+        margin: 0 20px;
+      }
+
+      .drawer-list a {
+        display: block;
+        padding: 0 16px;
+        text-decoration: none;
+        color: var(--app-secondary-color);
+        line-height: 40px;
+      }
+
+      .drawer-list a.iron-selected {
+        color: black;
+        font-weight: bold;
+      }
+
+      footer {
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        background-color: white;
+        font-size: 14px;
+        background-color:#1B1D1F;
+      }
+
+      iron-pages {
+        @apply --layout-flex;
+      }
+
+      .eventStream {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #F99F28;
+        padding: 0 10px;
+        width: 200px;
+        color: #000;
+      }
+
+      .eventStream > img {
+        padding-right: 10px;
+      }
+
+      .overview {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #8A8E93;
+        padding: 0 10px;
+        width: 200px;
+        color: #fff;
+      }
+
+      .overview > img {
+        padding-right: 10px;
+      }
+
+      paper-icon-button[focused] {
+        background-color: red;
+      }
+
+      paper-icon-button {
+        background-color: #38434F;
+      }
+
+      .team-logo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 50px;
+        padding-bottom: 50px;
+        width: 100%;
+      }
+
+      .team-logo > img {
+        max-height: 100px;
+      }
+
+      app-drawer > app-toolbar {
+        height: 200px;
+      }
+
+      app-drawer {
+        
+      }
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="/:page"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+
+    <app-drawer-layout fullbleed force-narrow>
+      <!-- Drawer content -->
+      <app-drawer id="drawer" slot="drawer" persistent="true">
+        <app-toolbar>
+          <div class="team-logo">
+            <img src="/images/nip.png">
+            Ninjas in Pyjamas
+          </div>
+        </app-toolbar>
+        <player-list players="[[team1]]"></team-list>
+      </app-drawer>
+
+      <app-drawer id="drawerRight" slot="drawer" persistent="true" align="right">
+        <app-toolbar>
+          <div class="team-logo">
+            <img src="/images/envyus.png">
+            Team EnVyUs
+          </div>
+        </app-toolbar>
+        <player-list players="[[team2]]"></team-list>
+      </app-drawer>
+
+      <!-- Main content -->
+      <app-header-layout has-scrolling-region fullbleed>
+
+        <app-header slot="header" condenses reveals effects="waterfall">
+          <app-toolbar>
+            <div class="headerContainer">
+              <div class="streams">
+                <div class="eventStream">
+                  <img src="/images/event-stream-active.png"/>
+                  Event stream
+                </div>
+                <div class="overview">
+                  <img src="/images/overview-default.png"/>
+                  Overview
+                </div>
+              </div>
+              <div class="views">
+                <div class="viewsText">Screen view</div>
+                <paper-icon-button src="/images/view-single-active.png"></paper-icon-button>
+                <paper-icon-button src="/images/view-double-active.png"></paper-icon-button>
+                <paper-icon-button src="/images/view-tripple-active.png"></paper-icon-button>
+                <paper-icon-button src="/images/view-quad-active.png"></paper-icon-button>
+              </div>
+            </div>
+            
+          </app-toolbar>
+        </app-header>
+
+        <iron-pages
+            selected="[[page]]"
+            attr-for-selected="name"
+            fallback-selection="view404"
+            role="main">
+          <my-view1 name="view1"></my-view1>
+          <my-view2 name="view2"></my-view2>
+          <my-view3 name="view3"></my-view3>
+          <my-view404 name="view404"></my-view404>
+        </iron-pages>
+
+
+        <footer id="footer">
+          <player-controls></player-controls>
+        </footer>
+      </app-header-layout>
+    </app-drawer-layout>
+  </template>
+
+  <script>
+    class MyApp extends Polymer.Element {
+
+      static get is() { return 'my-app'; }
+
+      static get properties() {
+        return {
+          page: {
+            type: String,
+            reflectToAttribute: true,
+            observer: '_pageChanged',
+          },
+          team1: {
+            type: Array,
+            value: ["Friberg","Get_RiGhT", "Maikelete", "F0rest", "Xizt"]
+          },
+          team2: {
+            type: Array,
+            value: ["Swift","Apex", "KennyS", "SIXER", "Happy"]
+          }
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routePageChanged(routeData.page)',
+        ];
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        document.onmousemove = this.handleMouseMove.bind(this);
+        this.$.footer.hidden = true;
+      }
+
+      handleMouseMove(event) {
+        const viewPortWidth = window.innerWidth;
+        const viewPortHeight = window.innerHeight;
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
+        const offsetRight = viewPortWidth - mouseX;
+        const offsetBottom = viewPortHeight - mouseY;
+
+        const drawersOpen = this.$.drawerRight.opened;
+        const footerHidden = this.$.footer.hidden;
+        
+        if((!drawersOpen && offsetRight > 200 && mouseX > 200) && (!footerHidden && offsetBottom > 85)) return;
+        
+        if(!drawersOpen && offsetRight < 200 || mouseX < 200)  {
+          this.$.drawerRight.open();
+          this.$.drawer.open();
+        } else if(drawersOpen && offsetRight > 200) {  
+          this.$.drawer.close();
+          this.$.drawerRight.close();
+        }
+
+        if(footerHidden && offsetBottom < 80) {
+          this.$.footer.hidden = false;
+        } else if(!footerHidden && offsetBottom > 80) {
+          this.$.footer.hidden = true;
+        }
+      }
+
+      _routePageChanged(page) {
+        // Polymer 2.0 will call with `undefined` on initialization.
+        // Ignore until we are properly called with a string.
+        if (page === undefined) {
+          return;
+        }
+
+        // If no page was found in the route data, page will be an empty string.
+        // Deault to 'view1' in that case.
+        this.page = page || 'view1';
+
+        // Close a non-persistent drawer when the page & route are changed.
+        if (!this.$.drawer.persistent) {
+          this.$.drawer.close();
+        }
+      }
+
+      _pageChanged(page) {
+        // Load page import on demand. Show 404 page if fails
+        var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
+        Polymer.importHref(
+            resolvedPageUrl,
+            null,
+            this._showPage404.bind(this),
+            true);
+      }
+
+      _showPage404() {
+        this.page = 'view404';
+      }
+    }
+
+    window.customElements.define(MyApp.is, MyApp);
+  </script>
+</dom-module>

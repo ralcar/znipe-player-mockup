@@ -1,0 +1,48 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="player-list">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      .container {
+        display:flex;
+        flex-direction: column;
+      }
+
+      .player {
+        display:flex;
+        background-color: #8A8E93;
+        color: white;
+        border-bottom: 1px solid #AEB0B3;
+        height: 100px;
+        padding-left: 20px;
+        align-items: center;
+      }
+    </style>
+    <div class="container">
+      <template is="dom-repeat" items="[[players]]">
+        <div class="player">{{item}}</div>
+      </template>
+    </div>
+
+  </template>
+
+  <script>
+    class PlayerList extends Polymer.Element {
+      static get is() { return 'player-list'; }
+      static get properties() {
+        return {
+          players: {
+            type:Array
+          }
+        }
+      }
+    }
+
+    window.customElements.define(PlayerList.is, PlayerList);
+  </script>
+</dom-module>
